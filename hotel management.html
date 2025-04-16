@@ -1,0 +1,2062 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DineDesk Pro - Smart Hotel & Restaurant Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3498db;        /* vibrant blue */
+      --primary-dark: #2980b9;
+      --secondary: #2ecc71;      /* emerald green */
+      --secondary-dark: #27ae60;
+      --accent: #e74c3c;        /* alizarin red */
+      --accent-dark: #c0392b;
+      --bg-light: #f8f9fa;      /* light gray */
+      --bg-white: #ffffff;
+      --bg-dark: #2c3e50;       /* midnight blue */
+      --text-dark: #333333;
+      --text-light: #7f8c8d;
+      --text-white: #ffffff;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    /* Header with gradient and animation */
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--text-white);
+      padding: 1.5em 1em;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0)
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: rotate(30deg) translate(-30%, -30%); }
+      100% { transform: rotate(30deg) translate(30%, 30%); }
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      position: relative;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-top: 0.5em;
+      position: relative;
+    }
+
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5em;
+    }
+
+    /* Enhanced search with floating label */
+    .search-container {
+      position: relative;
+      margin-bottom: 2em;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 1.2em 1.5em 1.2em 3.5em;
+      border: 2px solid #dfe6e9;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      background: var(--bg-white);
+      transition: var(--transition);
+      color: var(--text-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-container input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.2em;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: var(--text-light);
+    }
+
+    /* Grid system with hover effects */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5em;
+      margin-bottom: 2em;
+    }
+
+    .menu-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .food-item,
+    .result-item,
+    .menu-item,
+    .subtype-item {
+      background: var(--bg-white);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .food-item:hover,
+    .result-item:hover,
+    .menu-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .food-item img,
+    .menu-item img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .food-item:hover img,
+    .menu-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .food-item h4 {
+      padding: 1.2em;
+      text-align: center;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Modern icon navigation with active state */
+    .icon-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 1em;
+      background: var(--bg-white);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-sm);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+    }
+
+    .icon-nav button {
+      background: transparent;
+      color: var(--text-light);
+      border: none;
+      padding: 0.8em;
+      border-radius: var(--radius-sm);
+      font-size: 1.2em;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: var(--transition);
+      position: relative;
+      min-width: 70px;
+    }
+
+    .icon-nav button.active {
+      color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .icon-nav button.active::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .icon-nav button span {
+      font-size: 0.75em;
+      margin-top: 0.5em;
+      font-weight: 500;
+    }
+
+    .icon-nav button:hover {
+      color: var(--primary);
+    }
+
+    .order-btn-container {
+      position: relative;
+    }
+
+    /* Search results styling */
+    #searchResults {
+      margin-top: 1.5em;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5em;
+    }
+
+    .result-item {
+      padding: 1.5em;
+      text-align: center;
+    }
+
+    .result-item h4 {
+      color: var(--primary);
+      margin-bottom: 1em;
+      font-size: 1.1rem;
+    }
+
+    .result-item ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .result-item li {
+      margin: 0.8em 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8em;
+      padding: 0.5em;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .result-item li:hover {
+      background: rgba(52, 152, 219, 0.1);
+    }
+
+    .result-item li img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+
+    /* Footer with social icons */
+    footer {
+      background: var(--bg-dark);
+      color: var(--text-white);
+      text-align: center;
+      padding: 2em 1.5em;
+      margin-top: 3em;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 1.5em;
+      margin: 1em 0;
+    }
+
+    .social-icons a {
+      color: var(--text-white);
+      font-size: 1.5rem;
+      transition: var(--transition);
+    }
+
+    .social-icons a:hover {
+      color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .copyright {
+      margin-top: 1em;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    /* Modal with modern animation */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      overflow-y: auto;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: var(--bg-white);
+      margin: 5% auto;
+      padding: 2em;
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 700px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.4s ease;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1em;
+      margin-bottom: 1.5em;
+    }
+
+    .modal-header h2 {
+      color: var(--primary);
+      font-size: 1.8rem;
+    }
+
+    .close {
+      color: var(--text-light);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .close:hover {
+      color: var(--accent);
+      transform: rotate(90deg);
+    }
+
+    /* Subtypes grid with fancy hover */
+    .subtypes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1.5em;
+    }
+
+    .subtype-item {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .subtype-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+      z-index: 1;
+    }
+
+    .subtype-item img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .subtype-item:hover img {
+      transform: scale(1.1);
+    }
+
+    .subtype-item p {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 0.8em;
+      margin: 0;
+      font-weight: 600;
+      color: var(--text-white);
+      z-index: 2;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .subtype-item .add-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 3;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .subtype-item .add-btn:hover {
+      background: var(--secondary-dark);
+      transform: scale(1.1);
+    }
+
+    /* Booking form styling */
+    .book-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5em;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .book-form input,
+    .book-form select {
+      width: 100%;
+      padding: 1em;
+      border: 1px solid #ddd;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .book-form input:focus,
+    .book-form select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .book-form .full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* Button styles */
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1em 2em;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--secondary-dark);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-dark);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Order item styling */
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+      margin-bottom: 0.8em;
+      background: var(--bg-white);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .order-item:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .order-item-details {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      flex: 1;
+    }
+
+    .order-item-details img {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 2px solid var(--bg-light);
+    }
+
+    .order-item-info h4 {
+      color: var(--primary);
+      margin-bottom: 0.3em;
+    }
+
+    .order-item-info p {
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .order-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.8em;
+    }
+
+    .quantity-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .quantity-btn:hover {
+      background: var(--secondary-dark);
+      transform: scale(1.1);
+    }
+
+    .quantity-btn:active {
+      transform: scale(0.95);
+    }
+
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 0.5em;
+    }
+
+    .remove-btn:hover {
+      color: var(--accent);
+      transform: scale(1.2);
+    }
+
+    .price-tag {
+      font-weight: 600;
+      color: var(--primary);
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* Menu item styling */
+    .menu-item {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .menu-item-img {
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .menu-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .menu-item:hover img {
+      transform: scale(1.1);
+    }
+
+    .menu-item-info {
+      padding: 1.2em;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5em;
+    }
+
+    .menu-item-title {
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .menu-item-price {
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    .menu-item-desc {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-bottom: 1em;
+      flex: 1;
+    }
+
+    .menu-item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      color: #f39c12;
+    }
+
+    .add-to-cart-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.8em 1.2em;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+    }
+
+    .add-to-cart-btn:hover {
+      background: var(--secondary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Summary and checkout */
+    .summary {
+      background: var(--bg-white);
+      border-radius: var(--radius-md);
+      padding: 1.8em;
+      box-shadow: var(--shadow-sm);
+      margin-top: 1.5em;
+    }
+
+    .summary h3 {
+      margin-bottom: 1.2em;
+      color: var(--primary);
+      font-size: 1.3rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8em;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 1em;
+      margin-top: 1em;
+      border-top: 1px solid #eee;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      margin-top: 1.5em;
+    }
+
+    /* Empty state styling */
+    .empty-message {
+      text-align: center;
+      margin: 3em 0;
+      color: var(--text-light);
+      padding: 2em;
+    }
+
+    .empty-message i {
+      font-size: 3rem;
+      margin-bottom: 0.5em;
+      color: var(--primary);
+      opacity: 0.5;
+    }
+
+    .empty-message h3 {
+      margin-bottom: 0.5em;
+      color: var(--text-dark);
+    }
+
+    /* Success messages */
+    .success-msg {
+      background-color: rgba(46, 204, 113, 0.1);
+      color: var(--secondary-dark);
+      padding: 1.2em;
+      border-radius: var(--radius-sm);
+      margin: 1.5em 0;
+      text-align: center;
+      border-left: 4px solid var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8em;
+    }
+
+    /* Payment methods */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5em;
+      margin: 1.5em 0;
+    }
+
+    .payment-method {
+      padding: 1.5em 1em;
+      border: 2px solid #ddd;
+      border-radius: var(--radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8em;
+    }
+
+    .payment-method i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .payment-method.selected {
+      border-color: var(--primary);
+      background: rgba(52, 152, 219, 0.05);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    .payment-method:hover {
+      border-color: var(--secondary);
+    }
+
+    /* Tax and payment details */
+    .tax-details {
+      background: var(--bg-light);
+      padding: 1.5em;
+      border-radius: var(--radius-md);
+      margin: 1.5em 0;
+    }
+
+    .tax-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.8em 0;
+    }
+
+    .grand-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-top: 1.5em;
+      padding-top: 1em;
+      border-top: 2px solid #eee;
+      color: var(--primary);
+    }
+
+    /* Cart badge */
+    .cart-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--accent);
+      color: white;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Tab content */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .active-tab {
+      display: block;
+    }
+
+    /* Payment confirmation */
+    .payment-confirmation {
+      text-align: center;
+      padding: 2.5em;
+      background: rgba(46, 204, 113, 0.1);
+      border-radius: var(--radius-md);
+      margin: 2em 0;
+      border: 2px dashed var(--secondary);
+    }
+
+    .payment-confirmation i {
+      font-size: 4rem;
+      color: var(--secondary);
+      margin-bottom: 0.5em;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .payment-confirmation h3 {
+      color: var(--secondary-dark);
+      margin-bottom: 0.8em;
+      font-size: 1.8rem;
+    }
+
+    .payment-details {
+      text-align: left;
+      background: white;
+      padding: 1.8em;
+      border-radius: var(--radius-md);
+      margin: 1.5em 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .payment-details p {
+      margin-bottom: 0.8em;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .payment-details p strong {
+      color: var(--text-dark);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .icon-nav button {
+        padding: 0.6em;
+        font-size: 1em;
+        min-width: auto;
+      }
+
+      .icon-nav button span {
+        font-size: 0.7em;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 2% auto;
+        padding: 1.5em;
+      }
+
+      .book-form {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+
+      .payment-methods {
+        grid-template-columns: 1fr;
+      }
+
+      .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1em;
+      }
+
+      .order-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+      }
+
+      .subtypes-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .menu-item-img {
+        height: 140px;
+      }
+    }
+
+    /* Floating action button */
+    .fab {
+      position: fixed;
+      bottom: 2em;
+      right: 2em;
+      width: 60px;
+      height: 60px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      z-index: 100;
+      transition: var(--transition);
+      display: none;
+    }
+
+    .fab:hover {
+      background: var(--accent-dark);
+      transform: scale(1.1);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Featured items ribbon */
+    .featured-ribbon {
+      position: absolute;
+      top: 10px;
+      left: -5px;
+      background: var(--accent);
+      color: white;
+      padding: 0.3em 1em;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      z-index: 2;
+    }
+
+    .featured-ribbon::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid var(--accent-dark);
+      border-top: 5px solid var(--accent-dark);
+      border-bottom: 5px solid transparent;
+    }
+
+    /* Special offers section */
+    .special-offers {
+      margin: 2em 0;
+    }
+
+    .offer-card {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      border-radius: var(--radius-md);
+      padding: 1.5em;
+      color: white;
+      margin-bottom: 1.5em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .offer-card:nth-child(2) {
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+    }
+
+    .offer-card:nth-child(3) {
+      background: linear-gradient(135deg, #84fab0, #8fd3f4);
+    }
+
+    .offer-card h3 {
+      margin-bottom: 0.5em;
+      position: relative;
+      z-index: 2;
+    }
+
+    .offer-card p {
+      position: relative;
+      z-index: 2;
+      opacity: 0.9;
+    }
+
+    .offer-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    }
+
+    /* Floating labels for form inputs */
+    .float-label {
+      position: relative;
+    }
+
+    .float-label input,
+    .float-label select {
+      padding-top: 1.5em !important;
+    }
+
+    .float-label label {
+      position: absolute;
+      top: 1em;
+      left: 1em;
+      color: var(--text-light);
+      transition: var(--transition);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    .float-label input:focus + label,
+    .float-label input:not(:placeholder-shown) + label,
+    .float-label select:focus + label,
+    .float-label select:not([value=""]) + label {
+      top: 0.3em;
+      left: 1em;
+      font-size: 0.7rem;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DineDesk Pro</h1>
+    <p>Smart Hotel & Restaurant Management System</p>
+  </header>
+
+  <div class="icon-nav">
+    <button id="homeBtn" onclick="openTab('homeTab', this)" class="active">
+      <i class="fas fa-home"></i><span>Home</span>
+    </button>
+    <button id="bookBtn" onclick="openTab('bookTab', this)">
+      <i class="fas fa-calendar-alt"></i><span>Book</span>
+    </button>
+    <button id="menuBtn" onclick="openTab('menuTab', this)">
+      <i class="fas fa-utensils"></i><span>Menu</span>
+    </button>
+    <div class="order-btn-container">
+      <button id="orderBtn" onclick="openTab('orderTab', this)">
+        <i class="fas fa-shopping-cart"></i><span>Order</span>
+      </button>
+      <div class="cart-badge" id="cartBadge">0</div>
+    </div>
+    <button id="payBtn" onclick="openTab('payTab', this)">
+      <i class="fas fa-credit-card"></i><span>Pay</span>
+    </button>
+  </div>
+
+  <div class="main-container">
+    <!-- Home Tab -->
+    <div id="homeTab" class="tab-content active-tab">
+      <div class="search-container">
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="mainSearch" placeholder="Search your favorite food..." oninput="mainSearchFood()" />
+        </div>
+      </div>
+      
+      <div class="special-offers">
+        <h2>Today's Special Offers</h2>
+        <div class="offer-card">
+          <h3>Weekend Brunch Special</h3>
+          <p>Enjoy 20% off on all breakfast items from 10 AM to 2 PM</p>
+        </div>
+        <div class="offer-card">
+          <h3>Family Dinner Deal</h3>
+          <p>Order 3 main courses and get 1 dessert free</p>
+        </div>
+      </div>
+      
+      <h2>Popular Categories</h2>
+      <div class="grid" id="popularItems"></div>
+      <div id="searchResults"></div>
+    </div>
+
+    <!-- Book Tab -->
+    <div id="bookTab" class="tab-content">
+      <h2><i class="fas fa-calendar-alt"></i> Reserve a Table</h2>
+      <div id="bookingSuccess" class="success-msg" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <strong>Booking confirmed successfully!</strong>
+          <p>Your confirmation details have been sent to your email.</p>
+        </div>
+      </div>
+      <form id="bookingForm" class="book-form" onsubmit="submitBooking(event)">
+        <div class="form-group float-label">
+          <input type="date" id="bookingDate" required min="" />
+          <label for="bookingDate">Date</label>
+        </div>
+        <div class="form-group float-label">
+          <input type="time" id="bookingTime" required />
+          <label for="bookingTime">Time</label>
+        </div>
+        <div class="form-group float-label full-width">
+          <select id="guestCount" required>
+            <option value=""></option>
+            <option value="1">1 Person</option>
+            <option value="2">2 People</option>
+            <option value="3">3 People</option>
+            <option value="4">4 People</option>
+            <option value="5">5 People</option>
+            <option value="6">6 People</option>
+            <option value="7+">7+ People</option>
+          </select>
+          <label for="guestCount">Number of Guests</label>
+        </div>
+        <div class="form-group float-label full-width">
+          <select id="tableType">
+            <option value="any"></option>
+            <option value="window">Window Seat</option>
+            <option value="outdoor">Outdoor</option>
+            <option value="private">Private Section</option>
+            <option value="vip">VIP Lounge</option>
+          </select>
+          <label for="tableType">Table Preference</label>
+        </div>
+        <div class="form-group float-label full-width">
+          <input type="text" id="customerName" required placeholder=" " />
+          <label for="customerName">Full Name</label>
+        </div>
+        <div class="form-group float-label">
+          <input type="email" id="customerEmail" required placeholder=" " />
+          <label for="customerEmail">Email</label>
+        </div>
+        <div class="form-group float-label">
+          <input type="tel" id="customerPhone" required placeholder=" " />
+          <label for="customerPhone">Phone</label>
+        </div>
+        <div class="form-group float-label full-width">
+          <input type="text" id="specialRequests" placeholder=" " />
+          <label for="specialRequests">Special Requests</label>
+        </div>
+        <div class="full-width">
+          <button type="submit" class="btn">
+            <i class="fas fa-check"></i> Confirm Reservation
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Menu Tab -->
+    <div id="menuTab" class="tab-content">
+      <h2><i class="fas fa-utensils"></i> Our Menu</h2>
+      <div class="search-container">
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="menuSearch" placeholder="Search menu items..." oninput="searchMenu()" />
+        </div>
+      </div>
+      <div class="grid menu-grid" id="menuGrid"></div>
+    </div>
+
+    <!-- Order Tab -->
+    <div id="orderTab" class="tab-content">
+      <h2><i class="fas fa-shopping-cart"></i> Your Order</h2>
+      <div id="orderItems"></div>
+      <div id="emptyCartMessage" class="empty-message">
+        <i class="fas fa-shopping-basket"></i>
+        <h3>Your cart is empty</h3>
+        <p>Add items from the menu to start your order</p>
+        <button class="btn" onclick="openTab('menuTab', document.getElementById('menuBtn'))">
+          <i class="fas fa-utensils"></i> Browse Menu
+        </button>
+      </div>
+      <div id="cartSummary" class="summary" style="display: none;">
+        <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+        <div id="cartItemsList"></div>
+        <div class="total">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">₹0.00</span>
+        </div>
+        <button onclick="proceedToPayment()" class="btn checkout-btn">
+          <i class="fas fa-credit-card"></i> Proceed to Payment
+        </button>
+      </div>
+    </div>
+
+    <!-- Pay Tab -->
+    <div id="payTab" class="tab-content">
+      <h2><i class="fas fa-credit-card"></i> Payment</h2>
+      <div id="emptyPayMessage" class="empty-message">
+        <i class="fas fa-money-bill-wave"></i>
+        <h3>No active order</h3>
+        <p>Add items to your cart first</p>
+        <button class="btn" onclick="openTab('menuTab', document.getElementById('menuBtn'))">
+          <i class="fas fa-utensils"></i> Browse Menu
+        </button>
+      </div>
+      <div id="paymentDetails" style="display: none;">
+        <div class="summary">
+          <h3><i class="fas fa-file-invoice"></i> Bill Details</h3>
+          <div id="paymentItemsList"></div>
+          <div class="tax-details">
+            <div class="tax-item"><span>Subtotal</span><span id="paymentSubtotal">₹0.00</span></div>
+            <div class="tax-item"><span>CGST (2.5%)</span><span id="cgstAmount">₹0.00</span></div>
+            <div class="tax-item"><span>SGST (2.5%)</span><span id="sgstAmount">₹0.00</span></div>
+          </div>
+          <div class="grand-total">
+            <span>Grand Total</span>
+            <span id="grandTotal">₹0.00</span>
+          </div>
+        </div>
+
+        <h3><i class="fas fa-wallet"></i> Select Payment Method</h3>
+        <div class="payment-methods">
+          <div class="payment-method" onclick="selectPaymentMethod('card')">
+            <i class="fas fa-credit-card"></i>
+            <h4>Credit/Debit Card</h4>
+            <p>Pay with your card</p>
+          </div>
+          <div class="payment-method" onclick="selectPaymentMethod('upi')">
+            <i class="fas fa-mobile-alt"></i>
+            <h4>UPI</h4>
+            <p>Pay with UPI apps</p>
+          </div>
+          <div class="payment-method" onclick="selectPaymentMethod('cash')">
+            <i class="fas fa-money-bill-wave"></i>
+            <h4>Cash</h4>
+            <p>Pay at counter</p>
+          </div>
+        </div>
+
+        <button onclick="processPayment()" class="btn checkout-btn">
+          <i class="fas fa-lock"></i> Complete Payment
+        </button>
+      </div>
+
+      <div id="paymentSuccess" class="payment-confirmation" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <h3>Payment Successful!</h3>
+        <p>Thank you for your order. Your food will be prepared shortly.</p>
+        <div class="payment-details" id="paymentConfirmationDetails"></div>
+        <button class="btn" onclick="openTab('homeTab', document.getElementById('homeBtn'))">
+          <i class="fas fa-home"></i> Back to Home
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating action button for cart -->
+  <div class="fab" id="fabCart" onclick="openTab('orderTab', document.getElementById('orderBtn'))">
+    <i class="fas fa-shopping-cart"></i>
+    <div class="cart-badge" id="fabBadge">0</div>
+  </div>
+
+  <!-- Modal for subtypes -->
+  <div id="subtypesModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Food Varieties</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div id="subtypesContent" class="subtypes-grid"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <p class="copyright">&copy; 2025 DineDesk Pro - Smart Hotel Management System</p>
+    </div>
+  </footer>
+
+  <script>
+    // Enhanced food data with descriptions, ratings, and featured items
+    const foodList = [
+      { 
+        name: "Pizza", 
+        featured: true,
+        types: [
+          { name: "Margherita", price: 229, desc: "Classic tomato sauce, mozzarella, and basil", rating: 4.5 },
+          { name: "Paneer Tikka", price: 299, desc: "Spiced paneer cubes with onions and capsicum", rating: 4.7 },
+          { name: "Pepperoni", price: 279, desc: "Tomato sauce, mozzarella, and spicy pepperoni", rating: 4.6 }
+        ]
+      },
+      { 
+        name: "Burger", 
+        types: [
+          { name: "Classic Veg", price: 139, desc: "Vegetable patty with lettuce and special sauce", rating: 4.2 },
+          { name: "Cheese Burger", price: 169, desc: "Double cheese with crispy vegetables", rating: 4.4 }
+        ]
+      },
+      { 
+        name: "Pasta", 
+        featured: true,
+        types: [
+          { name: "Red Sauce", price: 199, desc: "Penne in tangy tomato sauce with herbs", rating: 4.3 },
+          { name: "White Sauce", price: 219, desc: "Fettuccine in creamy Alfredo sauce", rating: 4.5 },
+          { name: "Pesto Pasta", price: 239, desc: "Spaghetti with fresh basil pesto", rating: 4.6 }
+        ]
+      },
+      { 
+        name: "Salad", 
+        types: [
+          { name: "Greek Salad", price: 149, desc: "Cucumber, tomatoes, olives, and feta cheese", rating: 4.1 },
+          { name: "Caesar Salad", price: 179, desc: "Romaine lettuce with croutons and dressing", rating: 4.3 }
+        ]
+      },
+      { 
+        name: "Fries", 
+        types: [
+          { name: "Classic Fries", price: 99, desc: "Crispy golden fries with seasoning", rating: 4.0 },
+          { name: "Cheese Fries", price: 129, desc: "Loaded with melted cheese", rating: 4.4 }
+        ]
+      },
+      { 
+        name: "Noodles", 
+        featured: true,
+        types: [
+          { name: "Hakka Noodles", price: 159, desc: "Stir-fried noodles with vegetables", rating: 4.2 },
+          { name: "Schezwan Noodles", price: 179, desc: "Spicy noodles with Indo-Chinese flavors", rating: 4.5 }
+        ]
+      },
+      { 
+        name: "Paneer", 
+        types: [
+          { name: "Paneer Tikka", price: 249, desc: "Grilled paneer with spices", rating: 4.6 },
+          { name: "Chilli Paneer", price: 229, desc: "Crispy paneer in spicy sauce", rating: 4.5 }
+        ]
+      },
+      { 
+        name: "Sandwich", 
+        types: [
+          { name: "Veg Sandwich", price: 129, desc: "Fresh vegetables with mayo", rating: 4.0 },
+          { name: "Grilled Cheese", price: 149, desc: "Melted cheese between toasted bread", rating: 4.3 }
+        ]
+      },
+      { 
+        name: "Momos", 
+        types: [
+          { name: "Fried Momos", price: 149, desc: "Crispy fried dumplings", rating: 4.4 },
+          { name: "Steamed Momos", price: 129, desc: "Healthy steamed dumplings", rating: 4.2 }
+        ]
+      },
+      { 
+        name: "Dosa", 
+        featured: true,
+        types: [
+          { name: "Plain Dosa", price: 119, desc: "Crispy rice crepe with chutney", rating: 4.1 },
+          { name: "Masala Dosa", price: 149, desc: "Stuffed with spiced potatoes", rating: 4.6 }
+        ]
+      },
+      { 
+        name: "Biryani", 
+        types: [
+          { name: "Veg Biryani", price: 199, desc: "Fragrant rice with mixed vegetables", rating: 4.3 },
+          { name: "Paneer Biryani", price: 249, desc: "Rice cooked with spiced paneer", rating: 4.7 }
+        ]
+      },
+      { 
+        name: "Desserts", 
+        types: [
+          { name: "Chocolate Brownie", price: 129, desc: "Warm chocolate brownie with ice cream", rating: 4.8 },
+          { name: "Gulab Jamun", price: 99, desc: "Sweet milk balls in sugar syrup", rating: 4.5 }
+        ]
+      }
+    ];
+
+    // Cart and payment state
+    let cart = [];
+    let selectedPaymentMethod = null;
+    let currentTab = 'homeTab';
+    let currentTabBtn = document.getElementById('homeBtn');
+
+    // DOM utility functions
+    function qs(selector) { return document.querySelector(selector); }
+    function qsa(selector) { return document.querySelectorAll(selector); }
+
+    // Initialize the app
+    function init() {
+      loadPopularItems();
+      loadMenuItems();
+      updateCartBadge();
+      
+      // Set minimum date for booking to today
+      const today = new Date().toISOString().split('T')[0];
+      qs("#bookingDate").min = today;
+      
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        if (event.target === qs("#subtypesModal")) {
+          closeModal();
+        }
+      };
+      
+      // Show FAB when scrolling down
+      window.onscroll = function() {
+        const fab = qs("#fabCart");
+        if (window.scrollY > 300) {
+          fab.style.display = "flex";
+        } else {
+          fab.style.display = "none";
+        }
+      };
+      
+      // Initialize floating labels
+      initFloatingLabels();
+    }
+
+    // Initialize floating labels
+    function initFloatingLabels() {
+      const floatLabels = qsa('.float-label input, .float-label select');
+      floatLabels.forEach(input => {
+        // Check if input has value on load (for browser autofill)
+        if (input.value) {
+          input.previousElementSibling.style.top = '0.3em';
+          input.previousElementSibling.style.fontSize = '0.7rem';
+          input.previousElementSibling.style.color = 'var(--primary)';
+        }
+        
+        // Handle focus/blur events
+        input.addEventListener('focus', function() {
+          this.previousElementSibling.style.top = '0.3em';
+          this.previousElementSibling.style.fontSize = '0.7rem';
+          this.previousElementSibling.style.color = 'var(--primary)';
+        });
+        
+        input.addEventListener('blur', function() {
+          if (!this.value) {
+            this.previousElementSibling.style.top = '1em';
+            this.previousElementSibling.style.fontSize = '0.9rem';
+            this.previousElementSibling.style.color = 'var(--text-light)';
+          }
+        });
+      });
+    }
+
+    // Load popular items with featured tags
+    function loadPopularItems() {
+      const html = foodList.map(item => {
+        const featuredTag = item.featured ? '<div class="featured-ribbon">Featured</div>' : '';
+        return `
+          <div class="food-item" onclick="showSubTypes('${item.name}')">
+            ${featuredTag}
+            <img src="https://source.unsplash.com/300x200/?${item.name},food" alt="${item.name}" loading="lazy" />
+            <h4>${item.name}</h4>
+          </div>
+        `;
+      }).join('');
+      qs("#popularItems").innerHTML = html;
+    }
+
+    // Load menu items with enhanced details
+    function loadMenuItems() {
+      const html = foodList.flatMap(category => 
+        category.types.map(item => `
+          <div class="menu-item">
+            <div class="menu-item-img">
+              <img src="https://source.unsplash.com/300x200/?${item.name.replace(/ /g, '+')}" alt="${item.name}" loading="lazy" />
+            </div>
+            <div class="menu-item-info">
+              <div class="menu-item-header">
+                <h4 class="menu-item-title">${item.name}</h4>
+                <span class="menu-item-price">₹${item.price}</span>
+              </div>
+              <p class="menu-item-desc">${item.desc}</p>
+              <div class="menu-item-footer">
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <span>${item.rating}</span>
+                </div>
+                <button class="add-to-cart-btn" onclick="addToCart('${category.name}', '${item.name}', ${item.price})">
+                  <i class="fas fa-plus"></i> Add
+                </button>
+              </div>
+            </div>
+          </div>
+        `)
+      ).join('');
+      qs("#menuGrid").innerHTML = html;
+    }
+
+    // Show subtypes modal with enhanced UI
+    function showSubTypes(foodName) {
+      const food = foodList.find(f => f.name === foodName);
+      if (food) {
+        qs("#modalTitle").innerText = ${food.name} Varieties;
+        const html = food.types.map(type => `
+          <div class="subtype-item">
+            <img src="https://source.unsplash.com/300x200/?${type.name.replace(/ /g, '+')}" alt="${type.name}" loading="lazy" />
+            <p>${type.name} - ₹${type.price}</p>
+            <button class="add-btn" onclick="addToCart('${food.name}', '${type.name}', ${type.price}, event)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        `).join('');
+        qs("#subtypesContent").innerHTML = html;
+        qs("#subtypesModal").style.display = "block";
+        document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+      }
+    }
+
+    // Close modal
+    function closeModal() {
+      qs("#subtypesModal").style.display = "none";
+      document.body.style.overflow = "auto"; // Re-enable scrolling
+    }
+
+    // Search main page
+    function mainSearchFood() {
+      const searchTerm = qs("#mainSearch").value.toLowerCase();
+      const resultsContainer = qs("#searchResults");
+      
+      if (searchTerm.length < 2) {
+        resultsContainer.innerHTML = "";
+        return;
+      }
+      
+      const filteredFoods = foodList.filter(food => 
+        food.name.toLowerCase().includes(searchTerm) || 
+        food.types.some(type => type.name.toLowerCase().includes(searchTerm))
+      );
+      
+      if (filteredFoods.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="empty-message">
+            <i class="fas fa-search"></i>
+            <h3>No matching items found</h3>
+            <p>Try a different search term</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const html = filteredFoods.map(food => `
+        <div class="result-item">
+          <h4>${food.name}</h4>
+          <ul>
+            ${food.types.map(type => `
+              <li onclick="addToCart('${food.name}', '${type.name}', ${type.price})">
+                <img src="https://source.unsplash.com/300x200/?${type.name.replace(/ /g, '+')}" alt="${type.name}" />
+                <div>
+                  <strong>${type.name}</strong>
+                  <span>₹${type.price}</span>
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `).join('');
+      
+      resultsContainer.innerHTML = html;
+    }
+
+    // Search menu with debounce for better performance
+    let searchTimeout;
+    function searchMenu() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const searchTerm = qs("#menuSearch").value.toLowerCase();
+        qsa(".menu-item").forEach(item => {
+          const itemName = item.querySelector(".menu-item-title").textContent.toLowerCase();
+          const categoryName = item.querySelector(".menu-item-desc").textContent.toLowerCase();
+          item.style.display = (itemName.includes(searchTerm) || categoryName.includes(searchTerm)) 
+            ? "block" 
+            : "none";
+        });
+      }, 300);
+    }
+
+    // Add to cart with animation
+    function addToCart(category, name, price, event = null) {
+      if (event) {
+        event.stopPropagation();
+        
+        // Add button animation
+        const button = event.target.closest('button');
+        if (button) {
+          button.innerHTML = '<div class="spinner"></div>';
+          setTimeout(() => {
+            button.innerHTML = '<i class="fas fa-check"></i> Added';
+            button.style.background = 'var(--secondary)';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-plus"></i> Add';
+              button.style.background = 'var(--secondary)';
+            }, 1000);
+          }, 500);
+        }
+      }
+      
+      const existingItemIndex = cart.findIndex(item => item.name === name);
+      
+      if (existingItemIndex !== -1) {
+        cart[existingItemIndex].quantity += 1;
+      } else {
+        cart.push({ category, name, price, quantity: 1 });
+      }
+      
+      updateCartBadge();
+      updateOrderTab();
+      showToast(${name} added to cart!);
+    }
+
+    // Show toast message with animation
+    function showToast(message) {
+      const toast = document.createElement("div");
+      Object.assign(toast.style, {
+        position: "fixed", 
+        bottom: "20px", 
+        left: "50%", 
+        transform: "translateX(-50%)",
+        background: "var(--secondary)", 
+        color: "white", 
+        padding: "12px 24px",
+        borderRadius: "var(--radius-md)", 
+        zIndex: "9999", 
+        boxShadow: "var(--shadow-lg)",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        animation: "fadeIn 0.3s ease"
+      });
+      toast.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = "fadeOut 0.5s ease";
+        setTimeout(() => document.body.removeChild(toast), 500);
+      }, 3000);
+    }
+
+    // Update cart badge on both nav and FAB
+    function updateCartBadge() {
+      const badges = qsa(".cart-badge");
+      const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+      
+      badges.forEach(badge => {
+        badge.innerText = totalItems;
+        badge.style.display = totalItems > 0 ? "flex" : "none";
+      });
+      
+      // Show/hide FAB based on cart items
+      qs("#fabCart").style.display = totalItems > 0 ? "flex" : "none";
+    }
+
+    // Update order tab with cart items
+    function updateOrderTab() {
+      const orderItems = qs("#orderItems");
+      const emptyCartMessage = qs("#emptyCartMessage");
+      const cartSummary = qs("#cartSummary");
+      const cartItemsList = qs("#cartItemsList");
+      
+      if (cart.length === 0) {
+        orderItems.innerHTML = "";
+        emptyCartMessage.style.display = "block";
+        cartSummary.style.display = "none";
+        return;
+      }
+      
+      emptyCartMessage.style.display = "none";
+      cartSummary.style.display = "block";
+      
+      // Update order items
+      let subtotal = 0;
+      orderItems.innerHTML = cart.map((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        subtotal += itemTotal;
+        return `
+          <div class="order-item">
+            <div class="order-item-details">
+              <img src="https://source.unsplash.com/300x200/?${item.name.replace(/ /g, '+')}" alt="${item.name}" />
+              <div class="order-item-info">
+                <h4>${item.name}</h4>
+                <p>${item.category}</p>
+              </div>
+            </div>
+            <div class="order-controls">
+              <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span>${item.quantity}</span>
+              <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">
+                <i class="fas fa-plus"></i>
+              </button>
+              <span class="price-tag">₹${itemTotal.toFixed(2)}</span>
+              <button class="remove-btn" onclick="removeItem(${index})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Update cart summary
+      cartItemsList.innerHTML = cart.map(item => `
+        <div class="summary-item">
+          <div>${item.name} x ${item.quantity}</div>
+          <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+      
+      qs("#cartSubtotal").innerText = ₹${subtotal.toFixed(2)};
+      
+      // Also update payment tab
+      updatePaymentTab();
+    }
+
+    // Remove item from cart
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCartBadge();
+      updateOrderTab();
+      showToast("Item removed from cart");
+    }
+
+    // Update quantity of cart item
+    function updateQuantity(index, change) {
+      cart[index].quantity += change;
+      
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+        showToast("Item removed from cart");
+      } else {
+        showToast(Quantity updated to ${cart[index].quantity});
+      }
+      
+      updateCartBadge();
+      updateOrderTab();
+    }
+
+    // Proceed to payment
+    function proceedToPayment() {
+      openTab('payTab', document.getElementById('payBtn'));
+    }
+
+    // Update payment tab with order details
+    function updatePaymentTab() {
+      const paymentDetails = qs("#paymentDetails");
+      const emptyPayMessage = qs("#emptyPayMessage");
+      const paymentItemsList = qs("#paymentItemsList");
+      
+      if (cart.length === 0) {
+        paymentDetails.style.display = "none";
+        emptyPayMessage.style.display = "block";
+        qs("#paymentSuccess").style.display = "none";
+        return;
+      }
+      
+      paymentDetails.style.display = "block";
+      emptyPayMessage.style.display = "none";
+      
+      // Calculate amounts
+      const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+      const cgst = subtotal * 0.025;
+      const sgst = subtotal * 0.025;
+      const grandTotal = subtotal + cgst + sgst;
+      
+      // Update payment items list
+      paymentItemsList.innerHTML = cart.map(item => `
+        <div class="summary-item">
+          <div>${item.name} x ${item.quantity}</div>
+          <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+      
+      // Update totals
+      qs("#paymentSubtotal").innerText = ₹${subtotal.toFixed(2)};
+      qs("#cgstAmount").innerText = ₹${cgst.toFixed(2)};
+      qs("#sgstAmount").innerText = ₹${sgst.toFixed(2)};
+      qs("#grandTotal").innerText = ₹${grandTotal.toFixed(2)};
+    }
+
+    // Select payment method
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      qsa(".payment-method").forEach(el => el.classList.remove("selected"));
+      qsa(".payment-method").forEach(el => {
+        if (el.textContent.toLowerCase().includes(method)) {
+          el.classList.add("selected");
+        }
+      });
+    }
+
+    // Process payment with loading state
+    function processPayment() {
+      if (!selectedPaymentMethod) {
+        showToast("Please select a payment method!");
+        return;
+      }
+      
+      const btn = qs("#paymentDetails .checkout-btn");
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div>';
+      btn.disabled = true;
+      
+      // Simulate payment processing delay
+      setTimeout(() => {
+        // Calculate final amount
+        const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const cgst = subtotal * 0.025;
+        const sgst = subtotal * 0.025;
+        const grandTotal = subtotal + cgst + sgst;
+        
+        // Generate order ID
+        const orderId = "ORDER-" + Math.floor(1000 + Math.random() * 9000);
+        const date = new Date().toLocaleString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        // Show confirmation
+        const confirmationDetails = qs("#paymentConfirmationDetails");
+        confirmationDetails.innerHTML = `
+          <p><strong>Order ID:</strong> ${orderId}</p>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Payment Method:</strong> ${selectedPaymentMethod.toUpperCase()}</p>
+          <p><strong>Items:</strong></p>
+          ${cart.map(item => `
+            <p>${item.name} x ${item.quantity} - ₹${(item.price * item.quantity).toFixed(2)}</p>
+          `).join('')}
+          <div class="grand-total">
+            <span>Total Paid</span>
+            <span>₹${grandTotal.toFixed(2)}</span>
+          </div>
+          <p class="success-msg" style="margin-top: 1em;">
+            <i class="fas fa-check-circle"></i> Your order has been placed successfully!
+          </p>
+        `;
+        
+        // Show success message and reset cart
+        qs("#paymentDetails").style.display = "none";
+        qs("#paymentSuccess").style.display = "block";
+        cart = [];
+        updateCartBadge();
+        
+        // Reset button
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    // Submit booking form
+    function submitBooking(event) {
+      event.preventDefault();
+      
+      // Show loading state
+      const btn = event.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div>';
+      btn.disabled = true;
+      
+      // Simulate API call delay
+      setTimeout(() => {
+        const bookingSuccess = qs("#bookingSuccess");
+        bookingSuccess.style.display = "flex";
+        qs("#bookingForm").reset();
+        
+        // Reset floating labels
+        qsa('.float-label label').forEach(label => {
+          label.style.top = '1em';
+          label.style.fontSize = '0.9rem';
+          label.style.color = 'var(--text-light)';
+        });
+        
+        // Reset button
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        // Scroll to success message
+        bookingSuccess.scrollIntoView({ behavior: 'smooth' });
+        
+        // Hide success message after a delay
+        setTimeout(() => {
+          bookingSuccess.style.display = "none";
+        }, 5000);
+      }, 1500);
+    }
+
+    // Tab navigation with active state
+    function openTab(tabId, button) {
+      // Hide all tab contents
+      qsa(".tab-content").forEach(tab => tab.classList.remove("active-tab"));
+      
+      // Remove active class from all buttons
+      qsa(".icon-nav button").forEach(btn => btn.classList.remove("active"));
+      
+      // Show selected tab and mark button as active
+      qs(#${tabId}).classList.add("active-tab");
+      if (button) {
+        button.classList.add("active");
+        currentTabBtn = button;
+      }
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+      
+      // Update current tab
+      currentTab = tabId;
+      
+      // Special handling for certain tabs
+      if (tabId === 'orderTab') {
+        updateOrderTab();
+      } else if (tabId === 'payTab') {
+        updatePaymentTab();
+      }
+    }
+
+    // Start the app
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
